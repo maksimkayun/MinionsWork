@@ -12,7 +12,7 @@ namespace MinionsWork
             //Console.WriteLine("Hello World!");
             Select();
             //BadInsert();
-            //GoodInsert("Inva", 54, 1);
+            //GoodInsert("Ivan", 54, 1);
             //GoodSelect("Ivan");
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace MinionsWork
             connection.Open();
             using(connection)
             {
-                SqlCommand cmd = new SqlCommand("INSERT INT Minions " +
+                SqlCommand cmd = new SqlCommand("INSERT INTO Minions " +
                     "(Name, Age, TownId) VALUES " +
                     "(@name, @age, @townId)", connection);
 
