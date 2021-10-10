@@ -10,10 +10,12 @@ namespace MinionsWork
         static void Main(string[] args)
         {
             //Console.WriteLine("Hello World!");
-            Select();
             //BadInsert();
             //GoodInsert("Ivan", 54, 1);
+            //Select();
             //GoodSelect("Ivan");
+            SelectVillians();
+            
         }
         /// <summary>
         /// Самый простой запрос, выборка всех без фильтров
@@ -36,6 +38,27 @@ namespace MinionsWork
                             Console.Write($"{reader[i]} ");
                         }
                         Console.WriteLine();
+                    }
+                }
+            }
+        }
+
+        static void SelectVillians() {
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            using (connection) {
+                // CREATE VIEW Tab AS SELECT MinionsVillains.VillainId, COUNT(MinionsVillains.MinionId) AS 'C' 
+                // FROM [MinionsVillains] GROUP BY MinionsVillains.VillainId HAVING(COUNT(MinionsVillains.MinionId) > 3);
+                string selectionCommandString = "SELECT Villains.Name, Tab.C FROM [Tab], [Villains] WHERE " +
+                "Villains.Id = Tab.VillainId " +
+                "ORDER BY Tab.C DESC";
+                SqlCommand command = new SqlCommand(selectionCommandString, connection);
+                SqlDataReader reader = command.ExecuteReader();
+                using(reader)
+                {
+                    while(reader.Read())
+                    {
+                        Console.WriteLine($"{reader.GetString(0)} - {reader.GetInt32(1)}");
                     }
                 }
             }
