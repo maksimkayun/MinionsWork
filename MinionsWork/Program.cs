@@ -7,7 +7,7 @@ namespace MinionsWork
     class Program
     {
         static string connectionString = "Server=.;Database=Minions;Trusted_Connection=True";
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             //Console.WriteLine("Hello World!");
             //BadInsert();
@@ -16,7 +16,7 @@ namespace MinionsWork
             //GoodSelect("Ivan");
             SelectVillains();
             
-        }
+        }*/
         /// <summary>
         /// Самый простой запрос, выборка всех без фильтров
         /// </summary>
