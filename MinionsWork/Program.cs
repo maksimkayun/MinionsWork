@@ -14,7 +14,7 @@ namespace MinionsWork
             //GoodInsert("Ivan", 54, 1);
             //Select();
             //GoodSelect("Ivan");
-            SelectVillians();
+            SelectVillains();
             
         }
         /// <summary>
@@ -43,7 +43,7 @@ namespace MinionsWork
             }
         }
 
-        static void SelectVillians() {
+        static void SelectVillains() {
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
             using (connection) {
