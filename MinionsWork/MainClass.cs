@@ -8,29 +8,46 @@ namespace MinionsWork
         static void Main(string[] args) {
             //SelectVillains();
             //SelectMinionsByVillainId(int.Parse(Console.ReadLine()));
-            SetMinion("Eric", 9, "Baltimor");
+            WorkMenu();
+        }
+
+        static void WorkMenu() {
+            Console.Write("Minion (name, age, name of city): ");
+            string minion = Console.ReadLine();
+            Console.Write("\nVillain (name): ");
+            string villain = Console.ReadLine();
+
+            int villainId = CheckVillain(villain);
+            int minionId = SetMinion(minion.Split(" ")[0], int.Parse(minion.Split(" ")[1]),
+                minion.Split(" ")[2]);
+
+            using (var context = new MinionsContext()) {
+                var mv = new MinionsVillain(minionId, villainId);
+                context.MinionsVillains.Add(mv);
+                context.SaveChanges();
+            }
+            
+            Console.WriteLine($"Миньён {minion.Split(" ")[0]} был успешно добавлен, чтобы служить {villain}");
         }
         
         /// <summary>
-        /// Добавление миньёна. Если указанного города нет в базе, то он добавляется
+        /// Добавление миньёна. Если указанного города нет в базе, то он добавляется автоматически
+        /// Возвращает ID миньёна
         /// </summary>
         /// <param name="name"></param>
         /// <param name="age"></param>
         /// <param name="city"></param>
-        static void SetMinion(string name, int age, string city) {
+        static int SetMinion(string name, int age, string city) {
             int townId = CheckCity(city);
+            int minionId = 0;
             using (var context = new MinionsContext()) {
-                var minion = new Minion(name, age, 1);
+                var minion = new Minion(name, age, townId);
                 context.Minions.Add(minion);
                 context.SaveChanges();
+                var res = from m in context.Minions where m.Name == name select m;
+                minionId = res.ToArray()[0].Id;
             }
-
-            using (var context = new MinionsContext()) {
-                var res = from m in context.Minions select m;
-                foreach (var v in res) {
-                    Console.WriteLine($"{v.Name} {v.Age} {v.Town}");
-                }
-            }
+            return minionId;
         }
         
         /// <summary>
@@ -74,7 +91,50 @@ namespace MinionsWork
             }
             Console.WriteLine($"Город {name} успешно добавлен!");
         }
+        
+        /// <summary>
+        /// Метод проверяет, существует ли в БД злодей с заданным именем. Возвращает его ID.
+        /// Если злодея с таким именем нет, то регистрирует его в базе и возвращает ID.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        static int CheckVillain(string name) {
+            int id = 0;
+            using (var context = new MinionsContext()) {
+                var res = from v in context.Villains where v.Name == name select v;
+                if (res.ToArray().Length == 0) {
+                    id = SetVillain(name);
+                    Console.WriteLine($"Злодей {name} был добавлен в базу данных.");
+                }
+                else {
+                    id = res.ToArray()[0].Id;
+                }
+            }
+            return id;
+        }
+        
+        /// <summary>
+        /// Регистрирует в базе данных нового злодея со степенью злобы: "зло". Возвращает
+        /// ID зарегистрированного злодея.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static int SetVillain(string name) {
+            int id = 0;
+            using (var context = new MinionsContext()) {
+                var newVillain = new Villain(name, 4);
+                context.Villains.Add(newVillain);
+                context.SaveChanges();
+                var res = from v in context.Villains where v.Name == name select v;
+                id = res.ToArray()[0].Id;
+            }
+            return id;
+        }
 
+        /// <summary>
+        /// Метод возвращает всех злодеев, которым служат более 3-х миньёнов.
+        /// Для изменения критерия запроса необходимо изменить представление Tab.
+        /// </summary>
         static void SelectVillains() {
             using (var context = new MinionsContext()) {
                 //var res = context.Villains.Select(villain => villain.Name).ToList();
@@ -89,7 +149,12 @@ namespace MinionsWork
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Выводит на экран всех миньёнов, которые служат злодею с указанным Id.
+        /// Если такого злодея нет, выведется соответствующее сообщение.
+        /// </summary>
+        /// <param name="id"></param>
         static void SelectMinionsByVillainId(int id) {
             using (var context = new MinionsContext()) {
                 var res_1 = from Villain in context.Villains

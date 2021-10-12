@@ -7,6 +7,10 @@ namespace MinionsWork
 {
     public partial class MinionsVillain
     {
+        public MinionsVillain(int minionId, int villainId) {
+            MinionId = minionId;
+            VillainId = villainId;
+        }
         public int MinionId { get; set; }
         public int VillainId { get; set; }
 

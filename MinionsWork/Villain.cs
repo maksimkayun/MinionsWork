@@ -12,6 +12,11 @@ namespace MinionsWork
             MinionsVillains = new HashSet<MinionsVillain>();
         }
 
+        public Villain(string name, int evilnessFactorId) {
+            Name = name;
+            EvilnessFactorId = evilnessFactorId;
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public int EvilnessFactorId { get; set; }
