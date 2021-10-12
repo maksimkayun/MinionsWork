@@ -7,7 +7,72 @@ namespace MinionsWork
     {
         static void Main(string[] args) {
             //SelectVillains();
-            SelectMinionsByVillainId(int.Parse(Console.ReadLine()));
+            //SelectMinionsByVillainId(int.Parse(Console.ReadLine()));
+            SetMinion("Eric", 9, "Baltimor");
+        }
+        
+        /// <summary>
+        /// Добавление миньёна. Если указанного города нет в базе, то он добавляется
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="age"></param>
+        /// <param name="city"></param>
+        static void SetMinion(string name, int age, string city) {
+            int townId = CheckCity(city);
+            using (var context = new MinionsContext()) {
+                var minion = new Minion(name, age, 1);
+                context.Minions.Add(minion);
+                context.SaveChanges();
+            }
+
+            using (var context = new MinionsContext()) {
+                var res = from m in context.Minions select m;
+                foreach (var v in res) {
+                    Console.WriteLine($"{v.Name} {v.Age} {v.Town}");
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Проверка, есть ли такой город в базе данных. Если есть, то возвращает его Id, если нет - сохраняет в БД
+        /// и возвращает Id только что зарегистрированного города
+        /// </summary>
+        /// <param name="name"></param>
+        static int CheckCity(string name) {
+            using (var ctx = new MinionsContext()) {
+                var res = from t in ctx.Towns
+                    where t.Name == name
+                    select t;
+                if (res.ToArray().Length == 0) {
+                    CreateTown(name);
+                }
+                else {
+                    return res.ToArray()[0].Id;
+                }
+                res = from t in ctx.Towns
+                    where t.Name == name
+                    select t;
+                return res.ToArray()[0].Id;
+            }
+        }
+        
+        /// <summary>
+        /// Добавление города в базу с присваиванием рандомной страны
+        /// </summary>
+        /// <param name="name"></param>
+        static void CreateTown(string name) {
+            using (var context = new MinionsContext()) {
+                var res = from с in context.Countries select с;
+                int quantity = 0;
+                foreach (var v in res) {
+                    quantity++;
+                }
+
+                var town = new Town(name, new Random().Next(1, quantity));
+                context.Towns.Add(town);
+                context.SaveChanges();
+            }
+            Console.WriteLine($"Город {name} успешно добавлен!");
         }
 
         static void SelectVillains() {
