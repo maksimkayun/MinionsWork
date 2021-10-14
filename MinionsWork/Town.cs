@@ -12,14 +12,12 @@ namespace MinionsWork
             Minions = new HashSet<Minion>();
         }
 
-        public Town(string name, int countryCode) {
-            Name = name;
-            CountryCode = countryCode;
+        public Town(string name) { Name = name;
+            CountryCode = null;
         }
-
         public int Id { get; set; }
         public string Name { get; set; }
-        public int CountryCode { get; set; }
+        public int? CountryCode { get; set; }
 
         public virtual Country CountryCodeNavigation { get; set; }
         public virtual ICollection<Minion> Minions { get; set; }

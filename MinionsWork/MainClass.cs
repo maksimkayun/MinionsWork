@@ -7,19 +7,18 @@ namespace MinionsWork
     {
         static void Main(string[] args) {
             //SelectVillains();
-            //SelectMinionsByVillainId(int.Parse(Console.ReadLine()));
+            //SelectMinionsByVillainId(int.Parse(Console.ReadLine() ?? string.Empty));
             WorkMenu();
         }
 
         static void WorkMenu() {
             Console.Write("Minion (name, age, name of city): ");
-            string minion = Console.ReadLine();
+            var minion = Console.ReadLine()?.Split(" ");
             Console.Write("\nVillain (name): ");
             string villain = Console.ReadLine();
 
             int villainId = CheckVillain(villain);
-            int minionId = SetMinion(minion.Split(" ")[0], int.Parse(minion.Split(" ")[1]),
-                minion.Split(" ")[2]);
+            int minionId = SetMinion(minion?[0], int.Parse(minion?[1] ?? string.Empty), minion?[2]);
 
             using (var context = new MinionsContext()) {
                 var mv = new MinionsVillain(minionId, villainId);
@@ -27,7 +26,7 @@ namespace MinionsWork
                 context.SaveChanges();
             }
             
-            Console.WriteLine($"Миньён {minion.Split(" ")[0]} был успешно добавлен, чтобы служить {villain}");
+            Console.WriteLine($"Миньён {minion?[0]} был успешно добавлен, чтобы служить {villain}");
         }
         
         /// <summary>
@@ -79,13 +78,7 @@ namespace MinionsWork
         /// <param name="name"></param>
         static void CreateTown(string name) {
             using (var context = new MinionsContext()) {
-                var res = from с in context.Countries select с;
-                int quantity = 0;
-                foreach (var v in res) {
-                    quantity++;
-                }
-
-                var town = new Town(name, new Random().Next(1, quantity));
+                var town = new Town(name);
                 context.Towns.Add(town);
                 context.SaveChanges();
             }
