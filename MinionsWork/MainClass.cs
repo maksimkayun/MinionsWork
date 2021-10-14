@@ -9,9 +9,35 @@ namespace MinionsWork
             //SelectVillains();
             //SelectMinionsByVillainId(int.Parse(Console.ReadLine() ?? string.Empty));
             //WorkMenu();
-            DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
+            //DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
+            
+            MinionsGrowUp(Console.ReadLine()?.Split(" ").Select(int.Parse).ToArray());
         }
-
+        
+        /// <summary>
+        /// Миньоны стареют на один год.
+        /// </summary>
+        /// <param name="minions"></param>
+        static void MinionsGrowUp(int[] minions) {
+            using var context = new MinionsContext();
+            for (int i = 0; i < minions.Length; i++) {
+                var res = (from m in context.Minions where m.Id == minions[i] select m).SingleOrDefault();
+                if (res != null) res.Age++;
+            }
+            context.SaveChanges();
+            
+            var res2 = from m in context.Minions select m;
+            int j = 1;
+            foreach (var m in res2) {
+                Console.WriteLine($"{j}. {m.Name} {m.Age}");
+                j++;
+            }
+        }
+        
+        /// <summary>
+        /// Удаляет злодея из базы, освобождая миньёнов от служения указанному злодею
+        /// </summary>
+        /// <param name="id"></param>
         static void DeleteVillainById(int id) {
             using var ctx = new MinionsContext();
             var res = (from mv in ctx.Villains
@@ -37,7 +63,10 @@ namespace MinionsWork
             
             Console.WriteLine($"{quantity} миньонов было освобождено");
         }
-
+        
+        /// <summary>
+        /// Меню для добавления миньёнов для служения указанному злодею.
+        /// </summary>
         static void WorkMenu() {
             Console.Write("Minion (name, age, name of city): ");
             var minion = Console.ReadLine()?.Split(" ");
