@@ -8,7 +8,34 @@ namespace MinionsWork
         static void Main(string[] args) {
             //SelectVillains();
             //SelectMinionsByVillainId(int.Parse(Console.ReadLine() ?? string.Empty));
-            WorkMenu();
+            //WorkMenu();
+            DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
+        }
+
+        static void DeleteVillainById(int id) {
+            using var ctx = new MinionsContext();
+            var res = (from mv in ctx.Villains
+                where mv.Id == id
+                select mv).SingleOrDefault();
+
+            if (res == null) {
+                Console.WriteLine($"Злодея с ID {id} нет.");
+                return;
+            }
+
+            int quantity = 0;
+            foreach (var v in ctx.MinionsVillains) {
+                if (v.VillainId == res.Id) {
+                    ctx.MinionsVillains.Remove(v);
+                    quantity++;
+                }
+            }
+
+            ctx.Villains.Remove(res);
+            Console.WriteLine($"{res.Name} был удалён.");
+            ctx.SaveChanges();
+            
+            Console.WriteLine($"{quantity} миньонов было освобождено");
         }
 
         static void WorkMenu() {
@@ -25,10 +52,10 @@ namespace MinionsWork
                 context.MinionsVillains.Add(mv);
                 context.SaveChanges();
             }
-            
+
             Console.WriteLine($"Миньён {minion?[0]} был успешно добавлен, чтобы служить {villain}");
         }
-        
+
         /// <summary>
         /// Добавление миньёна. Если указанного города нет в базе, то он добавляется автоматически
         /// Возвращает ID миньёна
@@ -46,9 +73,10 @@ namespace MinionsWork
                 var res = from m in context.Minions where m.Name == name select m;
                 minionId = res.ToArray()[0].Id;
             }
+
             return minionId;
         }
-        
+
         /// <summary>
         /// Проверка, есть ли такой город в базе данных. Если есть, то возвращает его Id, если нет - сохраняет в БД
         /// и возвращает Id только что зарегистрированного города
@@ -65,13 +93,14 @@ namespace MinionsWork
                 else {
                     return res.ToArray()[0].Id;
                 }
+
                 res = from t in ctx.Towns
                     where t.Name == name
                     select t;
                 return res.ToArray()[0].Id;
             }
         }
-        
+
         /// <summary>
         /// Добавление города в базу с присваиванием рандомной страны
         /// </summary>
@@ -82,9 +111,10 @@ namespace MinionsWork
                 context.Towns.Add(town);
                 context.SaveChanges();
             }
+
             Console.WriteLine($"Город {name} успешно добавлен!");
         }
-        
+
         /// <summary>
         /// Метод проверяет, существует ли в БД злодей с заданным именем. Возвращает его ID.
         /// Если злодея с таким именем нет, то регистрирует его в базе и возвращает ID.
@@ -103,9 +133,10 @@ namespace MinionsWork
                     id = res.ToArray()[0].Id;
                 }
             }
+
             return id;
         }
-        
+
         /// <summary>
         /// Регистрирует в базе данных нового злодея со степенью злобы: "зло". Возвращает
         /// ID зарегистрированного злодея.
@@ -121,6 +152,7 @@ namespace MinionsWork
                 var res = from v in context.Villains where v.Name == name select v;
                 id = res.ToArray()[0].Id;
             }
+
             return id;
         }
 
@@ -142,7 +174,7 @@ namespace MinionsWork
                 }
             }
         }
-        
+
         /// <summary>
         /// Выводит на экран всех миньёнов, которые служат злодею с указанным Id.
         /// Если такого злодея нет, выведется соответствующее сообщение.
