@@ -5,17 +5,17 @@ namespace MinionsWork
 {
     public class MainClass
     {
-        static void Main(string[] args) {
+        /*static void Main(string[] args) {
             //SelectVillains();
             //SelectMinionsByVillainId(int.Parse(Console.ReadLine() ?? string.Empty));
             //WorkMenu();
             //DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
             
             MinionsGrowUp(Console.ReadLine()?.Split(" ").Select(int.Parse).ToArray());
-        }
+        }*/
         
         /// <summary>
-        /// Миньоны стареют на один год.
+        /// Миньоны взрослеют на один год.
         /// </summary>
         /// <param name="minions"></param>
         static void MinionsGrowUp(int[] minions) {
@@ -131,7 +131,7 @@ namespace MinionsWork
         }
 
         /// <summary>
-        /// Добавление города в базу с присваиванием рандомной страны
+        /// Добавление города в базу.
         /// </summary>
         /// <param name="name"></param>
         static void CreateTown(string name) {
