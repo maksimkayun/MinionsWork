@@ -13,8 +13,8 @@ namespace MinionsWork
             //SelectVillains();
             //SelectMinionsByVillainId(int.Parse(Console.ReadLine() ?? throw new InvalidOperationException()));
             //WorkMenu();
-            //DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
-            MinionsGrowUp(Console.ReadLine()?.Split(" ").Select(int.Parse).ToArray());
+            DeleteVillainById(int.Parse(Console.ReadLine() ?? string.Empty));
+            //MinionsGrowUp(Console.ReadLine()?.Split(" ").Select(int.Parse).ToArray());
         }
         
         /// <summary>
@@ -303,7 +303,8 @@ namespace MinionsWork
                 }
 
                 selectCommand = "SELECT [Name], [Age] FROM [Minions] " +
-                                "JOIN (SELECT [MinionId] FROM [MinionsVillains] WHERE [VillainId] = @id) AS e " +
+                                "JOIN (SELECT [MinionId] FROM [MinionsVillains] " +
+                                "WHERE [VillainId] = @id) AS e " +
                                 "ON [e].[MinionId] = [Minions].[Id] ORDER BY [Minions].[Name]";
                 command = new SqlCommand(selectCommand, connection);
                 command.Parameters.AddWithValue("@id", id);
